@@ -29,7 +29,7 @@
 | Nível | O que toca |
 |---|---|
 | **Recomendado** | Tudo, menos 0303/0304, ocultos e números falsificados |
-| **Rigoroso** | Só contatos, quem você já ligou/atendeu e quem insiste 2x em 5 min |
+| **Rigoroso** | Só contatos e quem você já ligou |
 | **Só contatos** | Só quem está na sua agenda |
 
 **Regras** (dá para ligar e desligar uma por uma):
@@ -39,12 +39,12 @@
 - 🎭 **Número falsificado** — quando a operadora sinaliza que o número exibido foi forjado (Android 11+, depende da operadora).
 - 🌎 **Internacionais** — números de fora do Brasil, muito usados em golpe.
 - 🚫 **Todos fora dos contatos** — o modo que acaba com as 50 ligações por dia.
-- ✅ **Quem você já ligou ou atendeu passa** — entregador, clínica, quem você retornou nos últimos 90 dias.
-- 🔁 **Insistiu 2x em 5 minutos, passa** — pode ser urgente.
+- ✅ **Quem você já ligou passa** — clínica, entregador, quem você retornou nos últimos 90 dias. (Ligação recebida e atendida não conta: atender um call center uma vez não libera ele.)
+- 🔁 **Insistiu 2x em 5 minutos, passa** — opcional, para quem prefere não perder urgência (desligado no Rigoroso).
 - 🚨 **Emergência** — depois que você liga para 190, 192 ou 193, **tudo passa por 1 hora**, até número oculto.
 - 📝 **Suas listas** — "sempre bloquear" e "sempre permitir" por número ou começo de número (ex.: `0800`, `11 4003`).
 - 🔇 **Recusar ou só silenciar** — silenciar deixa chamar sem som e a ligação aparece como perdida.
-- 📜 **Histórico** — data, número e motivo de cada bloqueio. Toque num número para liberar ou copiar.
+- 📜 **Histórico com motivo** — toda ligação aparece: se **tocou** ou foi **barrada**, e por quê. Toque num número para liberar ou bloquear.
 
 E sempre:
 
@@ -59,6 +59,10 @@ E sempre:
 3. Abra o app e toque em **Ativar proteção** → escolha **Chega de Telemarketing** como **app de ID de chamadas e spam**.
 4. Permita **Contatos** e **Registro de chamadas** (é o que garante que conhecido nunca seja bloqueado).
 5. Escolha o nível. Para acabar de vez com call center: **Rigoroso**.
+
+### Tocou e não devia?
+
+Abra o app e olhe o **Histórico**: cada ligação mostra o motivo de ter passado (ex.: *"Você ligou para este número nos últimos 90 dias"*). Se o histórico estiver vazio, o app não está ativado como app de ID de chamadas e spam.
 
 ### Samsung (Galaxy A15 e outros)
 

@@ -20,50 +20,62 @@ object Rules {
         val verificationFailed: Boolean,
     )
 
-    /** Retorna o motivo do bloqueio, ou null para deixar a ligação tocar normalmente. */
-    fun evaluate(ctx: Context, call: Incoming): String? {
+    /** Resultado da análise: bloquear ou não, e sempre o porquê (aparece no histórico). */
+    data class Decision(val block: Boolean, val reason: String)
+
+    private fun allow(reason: String) = Decision(false, reason)
+    private fun block(reason: String) = Decision(true, reason)
+
+    fun evaluate(ctx: Context, call: Incoming): Decision {
         val s = Settings(ctx)
-        if (!s.enabled) return null
+        s.migrate()
+        if (!s.enabled) return allow("Bloqueio pausado")
 
         // Ligou para a emergência há pouco? Deixa tudo passar, até número oculto (pode ser o retorno).
-        if (dialedEmergencyRecently(ctx)) return null
+        if (dialedEmergencyRecently(ctx)) return allow("Você ligou para emergência há menos de 1 hora")
 
         val raw = call.rawNumber.orEmpty().trim()
         val digits = raw.filter { it.isDigit() }
         if (digits.isEmpty() || call.hiddenByNetwork) {
-            return if (s.blockHidden) "Número oculto" else null
+            return if (s.blockHidden) block("Número oculto") else allow("Número oculto (regra desligada)")
         }
 
         // Quem está nos contatos sempre passa.
-        if (isContact(ctx, raw)) return null
+        if (isContact(ctx, raw)) return allow("Está nos seus contatos")
 
         val national = national(digits)
 
         // Lista "sempre permitir".
-        if (s.allowPrefixes.any { national.startsWith(it) || digits.startsWith(it) }) return null
+        s.allowPrefixes.firstOrNull { national.startsWith(it) || digits.startsWith(it) }?.let {
+            return allow("Está na sua lista sempre permitir ($it)")
+        }
 
-        if (s.blockSpoofed && call.verificationFailed) return "Número falsificado"
+        if (s.blockSpoofed && call.verificationFailed) return block("Número falsificado")
 
         if (s.blockTelemarketing && (national.startsWith("303") || national.startsWith("304"))) {
-            return "Telemarketing (0303/0304)"
+            return block("Telemarketing (0303/0304)")
         }
 
         s.customPrefixes.firstOrNull { national.startsWith(it) || digits.startsWith(it) }?.let {
-            return "Prefixo bloqueado ($it)"
+            return block("Está na sua lista sempre bloquear ($it)")
         }
 
         if (s.blockInternational && raw.startsWith("+") && !raw.startsWith("+55")) {
-            return "Internacional"
+            return block("Internacional")
         }
 
+        if (!s.blockUnknown) return allow("Desconhecido, mas a regra \"Todos fora dos contatos\" está desligada")
+
         // Só bloqueia desconhecidos se puder ler os contatos; senão bloquearia amigos também.
-        if (s.blockUnknown && hasPermission(ctx, Manifest.permission.READ_CONTACTS)) {
-            if (s.allowKnownFromLog && knownFromCallLog(ctx, national)) return null
-            val insisted = s.calledRecentlyAndRecord(national)
-            if (s.allowRepeat && insisted) return null
-            return "Fora dos contatos"
+        if (!hasPermission(ctx, Manifest.permission.READ_CONTACTS)) {
+            return allow("Sem permissão de Contatos: o app não sabe quem é conhecido")
         }
-        return null
+        if (s.allowKnownFromLog && dialedRecently(ctx, national)) {
+            return allow("Você ligou para este número nos últimos 90 dias")
+        }
+        val insisted = s.calledRecentlyAndRecord(national)
+        if (s.allowRepeat && insisted) return allow("Insistiu 2x em 5 minutos")
+        return block("Fora dos contatos")
     }
 
     /** Tira +55 e zeros do começo: "+55 0303 123 4567" -> "3031234567". */
@@ -92,12 +104,15 @@ object Rules {
         }
     }
 
-    /** Você ligou para este número ou atendeu uma ligação dele nos últimos 90 dias? */
-    private fun knownFromCallLog(ctx: Context, national: String): Boolean =
+    /**
+     * Você LIGOU para este número nos últimos 90 dias?
+     * Ligação recebida e atendida não conta: quem atende um call center uma vez não pode liberá-lo para sempre.
+     */
+    private fun dialedRecently(ctx: Context, national: String): Boolean =
         scanCallLog(
             ctx,
             since = System.currentTimeMillis() - KNOWN_WINDOW_MS,
-            types = listOf(CallLog.Calls.OUTGOING_TYPE, CallLog.Calls.INCOMING_TYPE),
+            types = listOf(CallLog.Calls.OUTGOING_TYPE),
         ) { number -> sameNumber(national(number.filter { it.isDigit() }), national) }
 
     private fun dialedEmergencyRecently(ctx: Context): Boolean =

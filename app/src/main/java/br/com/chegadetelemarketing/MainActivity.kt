@@ -53,6 +53,7 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main)
 
         settings = Settings(this)
+        settings.migrate()
         roleManager = getSystemService(RoleManager::class.java)
 
         statusPill = findViewById(R.id.statusPill)
@@ -154,7 +155,7 @@ class MainActivity : Activity() {
                 { settings.blockInternational }, { settings.blockInternational = it }),
             Toggle("Todos fora dos contatos", "O modo que acaba com as 50 ligações por dia.",
                 { settings.blockUnknown }, { settings.blockUnknown = it }, Manifest.permission.READ_CONTACTS),
-            Toggle("Quem você já ligou ou atendeu passa", "Entregador, clínica, quem você retornou nos últimos 90 dias.",
+            Toggle("Quem você já ligou passa", "Clínica, entregador, quem você retornou nos últimos 90 dias.",
                 { settings.allowKnownFromLog }, { settings.allowKnownFromLog = it }, Manifest.permission.READ_CALL_LOG),
             Toggle("Insistiu 2x em 5 minutos, passa", "Pode ser urgente: hospital, escola, banco.",
                 { settings.allowRepeat }, { settings.allowRepeat = it }),
@@ -259,7 +260,7 @@ class MainActivity : Activity() {
         levelChips.forEach { (l, chip) -> chip.isSelected = l == level }
         levelHint.text = when (level) {
             Settings.Level.RECOMMENDED -> "Barra 0303, ocultos e falsificados. Número comum desconhecido ainda toca."
-            Settings.Level.STRICT -> "Só toca contato, quem você já ligou ou quem insiste 2x. Acaba com o call center."
+            Settings.Level.STRICT -> "Só toca quem está nos contatos ou quem você já ligou. Acaba com o call center."
             Settings.Level.CONTACTS_ONLY -> "Só toca quem está na sua agenda. Mais nada."
             Settings.Level.CUSTOM -> "Personalizado: você ajustou as regras do seu jeito."
         }
@@ -285,7 +286,11 @@ class MainActivity : Activity() {
         val entries = settings.log()
         if (entries.isEmpty()) {
             logList.addView(TextView(this).apply {
-                text = "Nenhuma ligação barrada ainda."
+                text = if (hasRole()) {
+                    "Nenhuma ligação recebida desde a ativação. Quando alguém ligar, aparece aqui se passou ou foi barrada, e por quê."
+                } else {
+                    "O app ainda não está ativado, então não vê nenhuma ligação. Toque em Ativar proteção."
+                }
                 setTextAppearanceBody(14f)
             })
             return
@@ -316,10 +321,15 @@ class MainActivity : Activity() {
             setTextAppearanceBody(12f)
         })
         row.addView(top)
+        val (label, color) = when (e.action) {
+            Settings.Action.BLOCKED -> "✕ Barrada" to R.color.lime
+            Settings.Action.SILENCED -> "🔇 Silenciada" to R.color.lime
+            Settings.Action.ALLOWED -> "✓ Tocou" to R.color.gold
+        }
         row.addView(TextView(this).apply {
-            text = if (e.silenced) "${e.reason} · silenciada" else e.reason
+            text = "$label · ${e.reason}"
             typeface = resources.getFont(R.font.dm_sans_regular)
-            setTextColor(getColor(R.color.lime_soft))
+            setTextColor(getColor(color))
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         })
         if (e.number != "Oculto") row.setOnClickListener { showEntryMenu(e) }
@@ -327,11 +337,16 @@ class MainActivity : Activity() {
     }
 
     private fun showEntryMenu(e: Settings.Entry) {
+        val first = if (e.action == Settings.Action.ALLOWED) "Sempre bloquear este número" else "Sempre permitir este número"
         AlertDialog.Builder(this)
             .setTitle(e.number)
-            .setItems(arrayOf("Sempre permitir este número", "Copiar número")) { _, which ->
+            .setItems(arrayOf(first, "Copiar número")) { _, which ->
                 when (which) {
-                    0 -> {
+                    0 -> if (e.action == Settings.Action.ALLOWED) {
+                        settings.addBlockPrefix(e.number)
+                        prefixes.setText(settings.customPrefixesText)
+                        Toast.makeText(this, "Bloqueado. Da próxima vez não toca.", Toast.LENGTH_SHORT).show()
+                    } else {
                         settings.addAllowPrefix(e.number)
                         allowPrefixes.setText(settings.allowPrefixesText)
                         Toast.makeText(this, "Liberado. Da próxima vez ele toca.", Toast.LENGTH_SHORT).show()

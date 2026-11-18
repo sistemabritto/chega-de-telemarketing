@@ -26,17 +26,17 @@ class BlockerService : CallScreeningService() {
                 details.callerNumberVerificationStatus == Connection.VERIFICATION_STATUS_FAILED,
         )
 
-        val reason = try {
+        val decision = try {
             Rules.evaluate(this, call)
         } catch (e: Exception) {
-            null // na dúvida, deixa tocar
+            Rules.Decision(false, "Erro no app (${e.javaClass.simpleName}): deixou tocar por segurança")
         }
 
         val settings = Settings(this)
         val silence = settings.silenceOnly
 
         val response = when {
-            reason == null -> CallResponse.Builder().build()
+            !decision.block -> CallResponse.Builder().build()
             silence -> CallResponse.Builder().setSilenceCall(true).build()
             else -> CallResponse.Builder()
                 .setDisallowCall(true)
@@ -47,8 +47,12 @@ class BlockerService : CallScreeningService() {
         }
         respondToCall(details, response)
 
-        if (reason != null) {
-            settings.addLog(number?.takeIf { it.isNotBlank() } ?: "Oculto", reason, silence)
+        // Registra TODA ligação analisada, inclusive as que passaram, com o motivo.
+        val action = when {
+            !decision.block -> Settings.Action.ALLOWED
+            silence -> Settings.Action.SILENCED
+            else -> Settings.Action.BLOCKED
         }
+        settings.addLog(number?.takeIf { it.isNotBlank() } ?: "Oculto", decision.reason, action)
     }
 }

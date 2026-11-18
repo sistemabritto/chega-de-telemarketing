@@ -194,7 +194,7 @@
             <TextView
                 style="@style/Body"
                 android:layout_marginTop="4dp"
-                android:text="Toque num número para liberar ou copiar." />
+                android:text="Toda ligação aparece aqui: se tocou ou foi barrada, e o motivo. Toque num número para liberar ou bloquear." />
 
             <LinearLayout
                 android:id="@+id/logList"

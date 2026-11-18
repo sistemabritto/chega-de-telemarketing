@@ -79,7 +79,8 @@ class Settings(context: Context) {
     fun applyLevel(level: Level) {
         when (level) {
             Level.RECOMMENDED -> set(unknown = false, intl = false, repeat = true, known = true)
-            Level.STRICT -> set(unknown = true, intl = true, repeat = true, known = true)
+            // Rigoroso não libera quem insiste: call center costuma ligar de novo em seguida.
+            Level.STRICT -> set(unknown = true, intl = true, repeat = false, known = true)
             Level.CONTACTS_ONLY -> set(unknown = true, intl = true, repeat = false, known = false)
             Level.CUSTOM -> Unit
         }
@@ -99,7 +100,7 @@ class Settings(context: Context) {
         if (!blockTelemarketing || !blockHidden || !blockSpoofed) return Level.CUSTOM
         return when (listOf(blockUnknown, blockInternational, allowRepeat, allowKnownFromLog)) {
             listOf(false, false, true, true) -> Level.RECOMMENDED
-            listOf(true, true, true, true) -> Level.STRICT
+            listOf(true, true, false, true) -> Level.STRICT
             listOf(true, true, false, false) -> Level.CONTACTS_ONLY
             else -> Level.CUSTOM
         }
@@ -107,29 +108,47 @@ class Settings(context: Context) {
 
     // ---------- histórico ----------
 
-    data class Entry(val time: Long, val number: String, val reason: String, val silenced: Boolean)
+    enum class Action { BLOCKED, SILENCED, ALLOWED }
 
+    data class Entry(val time: Long, val number: String, val reason: String, val action: Action)
+
+    /** Registra toda ligação analisada. Só as barradas contam no placar. */
     @Synchronized
-    fun addLog(number: String, reason: String, silenced: Boolean) {
+    fun addLog(number: String, reason: String, action: Action) {
         val arr = JSONArray(prefs.getString("log", "[]"))
         val out = JSONArray()
         out.put(
             JSONObject().put("t", System.currentTimeMillis()).put("n", number)
-                .put("r", reason).put("s", silenced)
+                .put("r", reason).put("a", action.name)
         )
         for (i in 0 until minOf(arr.length(), MAX_LOG - 1)) out.put(arr.get(i))
-        prefs.edit()
-            .putString("log", out.toString())
-            .putInt("blocked_count", blockedCount + 1)
-            .apply()
+        val edit = prefs.edit().putString("log", out.toString())
+        if (action != Action.ALLOWED) edit.putInt("blocked_count", blockedCount + 1)
+        edit.apply()
     }
 
     fun log(): List<Entry> {
         val arr = JSONArray(prefs.getString("log", "[]"))
         return (0 until arr.length()).map {
             val o = arr.getJSONObject(it)
-            Entry(o.getLong("t"), o.getString("n"), o.getString("r"), o.optBoolean("s", false))
+            val legacy = if (o.optBoolean("s", false)) Action.SILENCED else Action.BLOCKED
+            val action = runCatching { Action.valueOf(o.getString("a")) }.getOrDefault(legacy)
+            Entry(o.getLong("t"), o.getString("n"), o.getString("r"), action)
         }
+    }
+
+    fun addBlockPrefix(number: String) {
+        val n = Rules.national(number.filter { it.isDigit() })
+        if (n.isEmpty() || n in customPrefixes) return
+        customPrefixesText = listOf(customPrefixesText.trim(), n).filter { it.isNotEmpty() }.joinToString(", ")
+    }
+
+    /** Ajustes de quem já tinha a versão anterior instalada. */
+    fun migrate() {
+        if (prefs.getInt("schema", 1) >= 2) return
+        // v1.1 Rigoroso liberava quem insistia 2x; na v1.2 não libera mais.
+        if (blockUnknown && blockInternational && allowRepeat && allowKnownFromLog) allowRepeat = false
+        prefs.edit().putInt("schema", 2).apply()
     }
 
     fun clearLog() {
