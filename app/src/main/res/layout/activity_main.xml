@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnActivate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Ativar proteção" />
+
+        <Button
+            android:id="@+id/btnDefaultApps"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Abrir apps padrão do Android" />
+
+        <TextView
+            style="@style/Section"
+            android:text="Regras" />
+
+        <Switch
+            android:id="@+id/swEnabled"
+            style="@style/Toggle"
+            android:text="Bloqueio ligado" />
+
+        <Switch
+            android:id="@+id/sw0303"
+            style="@style/Toggle"
+            android:text="Bloquear telemarketing oficial (0303 e 0304)" />
+
+        <Switch
+            android:id="@+id/swHidden"
+            style="@style/Toggle"
+            android:text="Bloquear números ocultos / privados" />
+
+        <Switch
+            android:id="@+id/swUnknown"
+            style="@style/Toggle"
+            android:text="Bloquear TODOS que não estão nos meus contatos" />
+
+        <Switch
+            android:id="@+id/swRepeat"
+            style="@style/Toggle"
+            android:text="Se um desconhecido ligar 2x em 5 min, deixar tocar (pode ser urgente)" />
+
+        <TextView
+            style="@style/Section"
+            android:text="Prefixos extras para bloquear" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.7"
+            android:text="Separe por vírgula. Ex.: 0800, 11 4003, 21 3003" />
+
+        <EditText
+            android:id="@+id/prefixes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="0800, 11 4003"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btnSavePrefixes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Salvar prefixos" />
+
+        <TextView
+            style="@style/Section"
+            android:text="Histórico" />
+
+        <TextView
+            android:id="@+id/counter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="monospace"
+            android:textIsSelectable="true"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnClear"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Limpar histórico" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:alpha="0.6"
+            android:text="Seus contatos nunca são bloqueados. O app não usa internet: nada sai do seu celular. Código aberto e grátis." />
+    </LinearLayout>
+</ScrollView>
