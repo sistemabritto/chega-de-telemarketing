@@ -1,24 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Chega de Telemarketing</string>
-
-    <color name="icon_bg">#C62828</color>
-
-    <style name="Section">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">24dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:textStyle">bold</item>
+    <style name="Theme.Britto" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="android:colorPrimary">@color/bg</item>
+        <item name="android:colorAccent">@color/lime</item>
+        <item name="android:colorControlActivated">@color/lime</item>
+        <item name="android:colorControlNormal">@color/muted</item>
+        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:navigationBarColor">@color/bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/muted</item>
+        <item name="android:textColorHint">#66FFFFFF</item>
+        <item name="android:fontFamily">@font/dm_sans_regular</item>
+        <item name="android:alertDialogTheme">@style/Theme.Britto.Dialog</item>
     </style>
 
-    <style name="Toggle">
+    <style name="Theme.Britto.Dialog" parent="android:Theme.DeviceDefault.Dialog.Alert">
+        <item name="android:colorAccent">@color/lime</item>
+        <item name="android:colorBackground">@color/card</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:fontFamily">@font/dm_sans_regular</item>
+    </style>
+
+    <style name="Card">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">48dp</item>
-        <item name="android:paddingTop">6dp</item>
-        <item name="android:paddingBottom">6dp</item>
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">18dp</item>
+        <item name="android:background">@drawable/bg_card</item>
+    </style>
+
+    <style name="Eyebrow">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/space_grotesk_medium</item>
+        <item name="android:letterSpacing">0.18</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/gold</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="CardTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/space_grotesk_bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">19sp</item>
+    </style>
+
+    <style name="Body">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/dm_sans_regular</item>
+        <item name="android:textColor">@color/muted</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingMultiplier">1.15</item>
+    </style>
+
+    <style name="BtnPrimary">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:background">@drawable/btn_primary</item>
+        <item name="android:fontFamily">@font/space_grotesk_bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/bg</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
+    <style name="BtnGhost" parent="BtnPrimary">
+        <item name="android:layout_height">46dp</item>
+        <item name="android:background">@drawable/btn_ghost</item>
+        <item name="android:fontFamily">@font/space_grotesk_medium</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Input">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:background">@drawable/bg_input</item>
+        <item name="android:fontFamily">@font/dm_sans_regular</item>
+        <item name="android:importantForAutofill">no</item>
+        <item name="android:inputType">text</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">15sp</item>
     </style>
 </resources>

@@ -2,127 +2,232 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg"
     android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingHorizontal="18dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="32dp">
 
-        <TextView
+        <!-- Cabeçalho com a marca -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="26sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/status"
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="Sistema Britto"
+                android:src="@drawable/logo_sb" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Eyebrow"
+                    android:text="Sistema Britto" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/space_grotesk_bold"
+                    android:text="@string/app_name"
+                    android:textColor="@color/white"
+                    android:textSize="22sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Cartão principal -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_hero"
+            android:orientation="vertical"
+            android:padding="22dp">
 
-        <Button
-            android:id="@+id/btnActivate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Ativar proteção" />
+            <TextView
+                android:id="@+id/statusPill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/space_grotesk_medium"
+                android:letterSpacing="0.08"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="5dp"
+                android:textSize="12sp" />
 
-        <Button
-            android:id="@+id/btnDefaultApps"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Abrir apps padrão do Android" />
+            <TextView
+                android:id="@+id/counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:fontFamily="@font/space_grotesk_bold"
+                android:includeFontPadding="false"
+                android:text="0"
+                android:textColor="@color/lime"
+                android:textSize="64sp" />
+
+            <TextView
+                android:id="@+id/counterLabel"
+                style="@style/Body"
+                android:text="ligações de call center barradas" />
+
+            <TextView
+                android:id="@+id/btnActivate"
+                style="@style/BtnPrimary"
+                android:layout_marginTop="18dp"
+                android:text="Ativar proteção" />
+
+            <TextView
+                android:id="@+id/btnDefaultApps"
+                style="@style/BtnGhost"
+                android:layout_marginTop="10dp"
+                android:text="Abrir apps padrão do Android" />
+        </LinearLayout>
+
+        <!-- Nível -->
+        <LinearLayout style="@style/Card">
+
+            <TextView
+                style="@style/CardTitle"
+                android:text="Nível de proteção" />
+
+            <TextView
+                android:id="@+id/levelHint"
+                style="@style/Body"
+                android:layout_marginTop="4dp" />
+
+            <LinearLayout
+                android:id="@+id/levelChips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal" />
+        </LinearLayout>
+
+        <!-- Regras -->
+        <LinearLayout
+            android:id="@+id/rules"
+            style="@style/Card">
+
+            <TextView
+                style="@style/CardTitle"
+                android:text="Regras" />
+        </LinearLayout>
+
+        <!-- Ação -->
+        <LinearLayout style="@style/Card">
+
+            <TextView
+                style="@style/CardTitle"
+                android:text="O que fazer com a ligação" />
+
+            <TextView
+                style="@style/Body"
+                android:layout_marginTop="4dp"
+                android:text="Recusar derruba na hora. Silenciar deixa chamar sem som e aparece como perdida." />
+
+            <LinearLayout
+                android:id="@+id/actionChips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal" />
+        </LinearLayout>
+
+        <!-- Listas -->
+        <LinearLayout style="@style/Card">
+
+            <TextView
+                style="@style/CardTitle"
+                android:text="Suas listas" />
+
+            <TextView
+                style="@style/Body"
+                android:layout_marginTop="4dp"
+                android:text="Números ou começos de número, separados por vírgula. Ex.: 0800, 11 4003" />
+
+            <TextView
+                style="@style/Eyebrow"
+                android:layout_marginTop="16dp"
+                android:text="Sempre bloquear" />
+
+            <EditText
+                android:id="@+id/prefixes"
+                style="@style/Input"
+                android:hint="0800, 11 4003" />
+
+            <TextView
+                style="@style/Eyebrow"
+                android:layout_marginTop="16dp"
+                android:text="Sempre permitir" />
+
+            <EditText
+                android:id="@+id/allowPrefixes"
+                style="@style/Input"
+                android:hint="Ex.: número do banco, clínica, escola" />
+
+            <TextView
+                android:id="@+id/btnSavePrefixes"
+                style="@style/BtnGhost"
+                android:layout_marginTop="14dp"
+                android:text="Salvar listas" />
+        </LinearLayout>
+
+        <!-- Histórico -->
+        <LinearLayout style="@style/Card">
+
+            <TextView
+                style="@style/CardTitle"
+                android:text="Histórico" />
+
+            <TextView
+                style="@style/Body"
+                android:layout_marginTop="4dp"
+                android:text="Toque num número para liberar ou copiar." />
+
+            <LinearLayout
+                android:id="@+id/logList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical" />
+
+            <TextView
+                android:id="@+id/btnClear"
+                style="@style/BtnGhost"
+                android:layout_marginTop="12dp"
+                android:text="Limpar histórico" />
+        </LinearLayout>
+
+        <!-- Rodapé -->
+        <TextView
+            style="@style/Body"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:text="Seus contatos nunca são bloqueados.\nO app não usa internet: nada sai do seu celular."
+            android:textSize="12sp" />
 
         <TextView
-            style="@style/Section"
-            android:text="Regras" />
-
-        <Switch
-            android:id="@+id/swEnabled"
-            style="@style/Toggle"
-            android:text="Bloqueio ligado" />
-
-        <Switch
-            android:id="@+id/sw0303"
-            style="@style/Toggle"
-            android:text="Bloquear telemarketing oficial (0303 e 0304)" />
-
-        <Switch
-            android:id="@+id/swHidden"
-            style="@style/Toggle"
-            android:text="Bloquear números ocultos / privados" />
-
-        <Switch
-            android:id="@+id/swUnknown"
-            style="@style/Toggle"
-            android:text="Bloquear TODOS que não estão nos meus contatos" />
-
-        <Switch
-            android:id="@+id/swRepeat"
-            style="@style/Toggle"
-            android:text="Se um desconhecido ligar 2x em 5 min, deixar tocar (pode ser urgente)" />
-
-        <TextView
-            style="@style/Section"
-            android:text="Prefixos extras para bloquear" />
-
-        <TextView
+            android:id="@+id/footerBrand"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:alpha="0.7"
-            android:text="Separe por vírgula. Ex.: 0800, 11 4003, 21 3003" />
-
-        <EditText
-            android:id="@+id/prefixes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="0800, 11 4003"
-            android:importantForAutofill="no"
-            android:inputType="text" />
-
-        <Button
-            android:id="@+id/btnSavePrefixes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Salvar prefixos" />
-
-        <TextView
-            style="@style/Section"
-            android:text="Histórico" />
-
-        <TextView
-            android:id="@+id/counter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/log"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="monospace"
-            android:textIsSelectable="true"
-            android:textSize="13sp" />
-
-        <Button
-            android:id="@+id/btnClear"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Limpar histórico" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:alpha="0.6"
-            android:text="Seus contatos nunca são bloqueados. O app não usa internet: nada sai do seu celular. Código aberto e grátis." />
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/space_grotesk_medium"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="Feito por Sistema Britto · código aberto e grátis"
+            android:textColor="@color/gold"
+            android:textSize="12sp" />
     </LinearLayout>
 </ScrollView>

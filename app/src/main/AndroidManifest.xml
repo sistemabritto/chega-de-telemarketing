@@ -3,6 +3,8 @@
 
     <!-- Só para não bloquear quem está nos seus contatos. Nada sai do celular: o app não tem permissão de internet. -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!-- Para deixar passar quem você já ligou/atendeu e liberar tudo depois de ligar para 190/192/193. -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
 
     <application
         android:allowBackup="true"
@@ -10,7 +12,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.DeviceDefault.DayNight">
+        android:theme="@style/Theme.Britto">
 
         <activity
             android:name=".MainActivity"

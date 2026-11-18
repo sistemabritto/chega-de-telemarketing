@@ -1,12 +1,14 @@
 package br.com.chegadetelemarketing
 
+import android.os.Build
 import android.telecom.Call
 import android.telecom.CallScreeningService
+import android.telecom.Connection
 import android.telecom.TelecomManager
 
 /**
  * O Android chama este serviço a cada ligação recebida, antes de tocar.
- * Se a regra mandar bloquear, a chamada é recusada em silêncio e a rede móvel continua normal.
+ * Se a regra mandar bloquear, a chamada é recusada (ou silenciada) e a rede móvel continua normal.
  */
 class BlockerService : CallScreeningService() {
 
@@ -17,28 +19,36 @@ class BlockerService : CallScreeningService() {
         }
 
         val number = details.handle?.schemeSpecificPart
-        val hidden = details.handlePresentation != TelecomManager.PRESENTATION_ALLOWED
+        val call = Rules.Incoming(
+            rawNumber = number,
+            hiddenByNetwork = details.handlePresentation != TelecomManager.PRESENTATION_ALLOWED,
+            verificationFailed = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                details.callerNumberVerificationStatus == Connection.VERIFICATION_STATUS_FAILED,
+        )
 
         val reason = try {
-            Rules.evaluate(this, number, hidden)
+            Rules.evaluate(this, call)
         } catch (e: Exception) {
             null // na dúvida, deixa tocar
         }
 
-        val response = if (reason != null) {
-            CallResponse.Builder()
+        val settings = Settings(this)
+        val silence = settings.silenceOnly
+
+        val response = when {
+            reason == null -> CallResponse.Builder().build()
+            silence -> CallResponse.Builder().setSilenceCall(true).build()
+            else -> CallResponse.Builder()
                 .setDisallowCall(true)
                 .setRejectCall(true)
                 .setSkipCallLog(false)
                 .setSkipNotification(true)
                 .build()
-        } else {
-            CallResponse.Builder().build()
         }
         respondToCall(details, response)
 
         if (reason != null) {
-            Settings(this).addLog(number?.takeIf { it.isNotBlank() } ?: "Oculto", reason)
+            settings.addLog(number?.takeIf { it.isNotBlank() } ?: "Oculto", reason, silence)
         }
     }
 }
